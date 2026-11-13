@@ -1,0 +1,27 @@
+
+@startuml
+left to right direction
+
+actor "LAN User" as user
+
+rectangle "LAN File Management System" {
+    usecase "UC-01\nBrowse directories and subdirectories" as UC01
+    usecase "UC-02\nDownload files" as UC02
+    usecase "UC-03\nUpload files and directories" as UC03
+    usecase "UC-04\nCreate directories" as UC04
+    usecase "UC-05\nRename files and directories" as UC05
+    usecase "UC-06\nMove files and directories" as UC06
+    usecase "UC-07\nDelete files and directories" as UC07
+    usecase "UC-08\nDownload directories as ZIP archives" as UC08
+
+    user --> UC01
+    user --> UC02
+    user --> UC03
+    user --> UC04
+    user --> UC05
+    user --> UC06
+    user --> UC07
+    user --> UC08
+}
+
+@enduml
