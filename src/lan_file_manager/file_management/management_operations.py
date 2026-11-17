@@ -1,4 +1,8 @@
 import pathlib
+import io
+import os
+import zipfile
+import tempfile
 from src.lan_file_manager.filesystem_access import directory_operations as filesystem_access
 
 CHUNK_SIZE = 1024 * 1024
@@ -14,6 +18,24 @@ class FileManagement:
     def __resolve_path_name(self, relative_path: str) -> pathlib.Path:
         relative_path = self.default_path / relative_path
         return relative_path.resolve()
+
+    def is_requested_path_a_dir(self, path: str) -> bool:
+        '''
+        Checks whether the requested path points to a directory within the allowed storage root.
+        '''
+        if not path.startswith('/'):
+            raise ValueError('The requested path is not valid.')
+
+        relative_path = self.__convert_path_name_into_relative(path)
+        resolved_path = self.__resolve_path_name(relative_path)
+
+        if not self.__is_requested_path_inside_root_path(resolved_path):
+            raise PermissionError('The requested path is outside the allowed path.')
+
+        if not resolved_path.exists():
+            raise FileNotFoundError('The requested path could not be found.')
+
+        return resolved_path.is_dir()
 
 
     def __convert_path_name_into_relative(self, requested_path_str: str) -> str:
@@ -149,9 +171,65 @@ class FileManagement:
             raise PermissionError('The requested path is outside the allowed path.')
         
 
+    def open_file(self, path: str) -> pathlib.Path:
+        """
+        Validates the requested path and returns the file's resolved path.
+        Raises an exception if the path is invalid, outside the allowed directory,
+        does not exist, or points to a directory.
+        """
+        if not path.startswith('/'):
+            raise ValueError('The requested path is not valid.')
         
+        relative_requested_path_str = self.__convert_path_name_into_relative(path)
+        
+        resolved_path = self.__resolve_path_name(relative_requested_path_str)
+
+        if not self.__is_requested_path_inside_root_path(resolved_path):
+            raise PermissionError('The requested path is outside the allowed path.')
+        
+        if not resolved_path.exists():
+            raise FileNotFoundError('The requested file could not be found.')
+        
+        if resolved_path.is_dir():
+            raise IsADirectoryError('The requested file is actually a directory.')
+
+                
+        return resolved_path
 
 
+    def create_directory_zip(self, path: str) -> pathlib.Path:
+        """
+        Validates the requested directory and creates a temporary ZIP archive
+        containing its contents. Returns the path to the generated ZIP file.
+        """
+        if not path.startswith('/'):
+            raise ValueError('The requested path is not valid.')
+        
+        relative_requested_path_str = self.__convert_path_name_into_relative(path)
+                
+        resolved_path = self.__resolve_path_name(relative_requested_path_str)
 
+        if not self.__is_requested_path_inside_root_path(resolved_path):
+            raise PermissionError('The requested folder is outside the allowed path.')
 
+        if not resolved_path.exists():
+            raise FileNotFoundError('The requested folder could not be found.')
+
+        if not resolved_path.is_dir():
+            raise NotADirectoryError('The requested path is not a directory.')
+
+        temp_zip_file = tempfile.NamedTemporaryFile(mode='w+b', suffix='.zip', delete=False, dir=tempfile.gettempdir())
+        temp_zip_path = pathlib.Path(temp_zip_file.name)
+        temp_zip_file.close()
+
+        try:
+            with zipfile.ZipFile(file=temp_zip_path, mode='w', allowZip64=True) as zip_file:
+                for file_path in resolved_path.rglob('*'):
+                    zip_file.write(file_path, arcname=file_path.relative_to(resolved_path))
+
+        except Exception:
+            os.remove(temp_zip_path)
+            raise 
+
+        return temp_zip_path
         
