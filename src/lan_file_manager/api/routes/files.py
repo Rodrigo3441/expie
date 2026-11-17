@@ -59,8 +59,17 @@ def move_file(
 ):
     pass
 
-@router.delete('/')
+@router.delete('/delete')
 def delete_file(
+    path: str,
+    name: str | None = None,
     file_management: FileManagement = Depends(return_file_management)
 ):
-    pass
+
+    file_management.delete_resource(path, name)
+
+    return {
+            "success": True,
+            "data": None,
+            "error": None
+    }
