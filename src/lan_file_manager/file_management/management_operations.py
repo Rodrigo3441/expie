@@ -232,4 +232,76 @@ class FileManagement:
             raise 
 
         return temp_zip_path
+
+
+    def create_dir(self, path: str, name: str) -> None:
+        """
+        Creates a new directory inside an existing folder after validating
+        the directory name and ensuring the destination is inside the configured storage root.
+        """
+        if not path.startswith('/'):
+            raise ValueError('The requested path is not valid.')
+
+        if not name:
+            raise ValueError('The folder name cannot be empty.')
+
+        if '/' in name or name in ('.','..') or '\\' in name:
+            raise ValueError('The folder name is invalid.')
+
+
+        relative_requested_path_str = self.__convert_path_name_into_relative(path)
+        resolved_path = self.__resolve_path_name(relative_requested_path_str)
+
+        if not resolved_path.exists():
+            raise FileNotFoundError('The current path does not exist.')
+
+        if not resolved_path.is_dir():
+            raise NotADirectoryError('The current path is not a folder.')
+
+        final_folder_path = resolved_path / name
+        final_resolved_path = self.__resolve_path_name(final_folder_path)
+    
+        if not self.__is_requested_path_inside_root_path(final_resolved_path):
+            raise PermissionError('The requested path for folder creation is outside the allowed path.')
         
+        filesystem_access.create_directory(final_resolved_path)
+
+
+    def delete_resource(self, path: str, name: str) -> None:
+        """
+        Deletes a file or directory after validating the requested path
+        and ensuring the resource is inside the configured storage root.
+        """
+        if not path.startswith('/'):
+            raise ValueError('The requested path is not valid.')
+
+        relative_requested_path_str = self.__convert_path_name_into_relative(path)     
+        resolved_path = self.__resolve_path_name(relative_requested_path_str)
+
+        if not resolved_path.exists():
+            raise FileNotFoundError('The current path does not exist.')
+
+        if not resolved_path.is_dir():
+            raise NotADirectoryError('The current path is not a folder.')
+
+        if name is None:
+            final_resolved_path = resolved_path
+        else:
+            if '/' in name or '\\' in name or name in ('.','..'):
+                raise ValueError('The filename is invalid.')
+            
+            final_resolved_path = self.__resolve_path_name(resolved_path / name)
+
+        if final_resolved_path == self.default_path:
+            raise PermissionError('Cannot delete the storage root directory.')
+
+        if not self.__is_requested_path_inside_root_path(final_resolved_path):
+            raise PermissionError('The requested folder is outside the allowed path.')
+
+        if not final_resolved_path.exists():
+            raise FileNotFoundError('The requested folder could not be found.')
+
+        if final_resolved_path.is_dir():
+            filesystem_access.delete_directory(final_resolved_path)
+        else:
+            filesystem_access.delete_file(final_resolved_path)
