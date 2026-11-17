@@ -26,7 +26,7 @@ def download_file(
     file_management: FileManagement = Depends(return_file_management),
     path: str = '/'
     ):
-    is_request_a_dir = file_management.is_request_a_dir(path)
+    is_request_a_dir = file_management.is_requested_path_a_dir(path)
 
     filename = ''
 
