@@ -1,56 +1,66 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File
 from ...file_management.management_operations import FileManagement
 from ..dependencies import return_file_management
+from pydantic import BaseModel
 
 router = APIRouter(prefix='/api/files')
 
-@router.get('/')
-async def list_directory_content(
+class ResponseModel(BaseModel):
+    success: bool
+    data: list[dict] | None
+    error: dict | None
+
+
+@router.get('/', response_model=ResponseModel)
+def list_directory_content(
     file_management: FileManagement = Depends(return_file_management),
     path: str =  '/'
 ):
-   try:
-        data = file_management.list_directory(path)
 
-        return {
-            "success": True,
-            "data": data,
-            "error": None
-        }
-   except Exception as e:
-        return {
-            "success": False,
-            "data": [],
-            "error": e.args
-        }
+    data = file_management.list_directory(path)
+
+    return {
+        "success": True,
+        "data": data,
+        "error": None
+    }
+ 
 
 
 @router.post('/')
-async def upload_files(
-    file_management: FileManagement = Depends(return_file_management)
+def upload_file(
+    file_management: FileManagement = Depends(return_file_management),
+    file: UploadFile = File(...),
+    path: str = '/'
 ):
-    pass
+    try:
+        file_management.upload_file(file.file, path, file.filename)
+        file.close()
+        
+    finally:
+        file.close()
 
-@router.get('/download')
-async def download_file(
-    file_management: FileManagement = Depends(return_file_management)
-):
-    pass
+    return {
+            "success": True,
+            "data": None,
+            "error": None
+    }
+
 
 @router.patch('/')
-async def rename_file(
+def rename_file(
     file_management: FileManagement = Depends(return_file_management)
 ):
     pass
 
 @router.patch('/move')
-async def move_file(
+def move_file(
     file_management: FileManagement = Depends(return_file_management)
 ):
     pass
 
 @router.delete('/')
-async def delete_file(
+def delete_file(
     file_management: FileManagement = Depends(return_file_management)
 ):
     pass
