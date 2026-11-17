@@ -1,4 +1,6 @@
 import pathlib
+import io
+import shutil
 from tempfile import NamedTemporaryFile
 
 
@@ -82,7 +84,19 @@ def finalize_upload(
 def delete_temp_file(temp_path: pathlib.Path) -> None:
     temp_path.unlink()
 
+# ======================================
+# Download operations (Not used)
+# ======================================
+def open_file(path: pathlib.Path) -> io.BufferedReader:
+    return path.open(mode='rb')
 
 # ======================================
-# Download operations
+# Delete operations
 # ======================================
+def delete_file(path: pathlib.Path) -> None:
+    path.unlink(missing_ok=False)
+
+
+def delete_directory(path: pathlib.Path) -> None:
+    shutil.rmtree(path, ignore_errors=False)
+
