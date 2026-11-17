@@ -34,7 +34,7 @@ app = FastAPI(lifespan=lifespan)
 # include the api endpoints for the application
 app.include_router(files.router)
 app.include_router(directories.router)
-app.include_roter(downloads.router)
+app.include_router(downloads.router)
 
 # include the exception handlers for the application
 app.add_exception_handler(FileNotFoundError, handle_file_not_found)
