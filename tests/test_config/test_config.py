@@ -12,6 +12,10 @@ def test_get_config_missing_file():
     with pytest.raises(FileNotFoundError):
         get_config(test_missing_file)
 
+def test_get_chunk_size():
+    test_existing_file = pathlib.Path(__file__).parents[2] / 'config/config.yaml'
+    assert get_config(test_existing_file)['default_chunk_size'] == 1048576
+
 
 def test_get_config_missing_required_fields(tmp_path):
     # Create a temporary config file without required fields
@@ -46,3 +50,4 @@ def test_get_config_is_the_config_file(tmp_path):
     assert isinstance(config, dict)
     assert 'default_path' in config
     assert 'connection' in config
+
