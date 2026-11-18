@@ -1,7 +1,6 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
-
 async def handle_file_not_found(
         request: Request,
         exc: FileNotFoundError
@@ -99,6 +98,23 @@ async def handle_unexpected_exception(
             "error": {
                 "code": "INTERNAL_SERVER_ERROR",
                 "message": "An unexpected error occurred."
+            }
+        }
+    )
+
+
+async def handle_file_exists_exception(
+        request: Request, 
+        exc: FileExistsError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=400,
+        content={
+            "success": False,
+            "data": None,
+            "error": {
+                "code": "RESOURCE_ALREADY_EXISTS",
+                "message": str(exc)
             }
         }
     )
