@@ -7,7 +7,8 @@ from src.lan_file_manager.api.exception_handlers import (
     handle_permission_error,
     handle_is_a_directory,
     handle_value_error,
-    handle_unexpected_exception
+    handle_unexpected_exception,
+    handle_file_exists_exception
 )
 
 import pathlib
@@ -19,13 +20,17 @@ def load_default_path_config() -> pathlib.Path:
     config = get_config()
     return pathlib.Path(config['default_path'])
 
+def load_default_chunk_size_config() -> int:
+    config = get_config()
+    return config['default_chunk_size']
 
 default_path = load_default_path_config()
+default_chunk_size = load_default_chunk_size_config()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # global variable for startup
-    app.state.file_management = FileManagement(default_path)
+    app.state.file_management = FileManagement(default_path, default_chunk_size)
     yield
 
 
@@ -43,10 +48,8 @@ app.add_exception_handler(PermissionError, handle_permission_error)
 app.add_exception_handler(IsADirectoryError, handle_is_a_directory)
 app.add_exception_handler(ValueError, handle_value_error)
 app.add_exception_handler(Exception, handle_unexpected_exception)
+app.add_exception_handler(FileExistsError, handle_file_exists_exception)
 
-@app.get('/')
-async def read_root(request: Request):
-    return request.app.state.file_management.list_directory('/')
 
 
 
