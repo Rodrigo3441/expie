@@ -96,7 +96,17 @@ def open_file(path: pathlib.Path) -> io.BufferedReader:
 def delete_file(path: pathlib.Path) -> None:
     path.unlink(missing_ok=False)
 
-
 def delete_directory(path: pathlib.Path) -> None:
     shutil.rmtree(path, ignore_errors=False)
 
+# ======================================
+# Rename operation
+# ======================================
+def rename_resource(source_path: pathlib.Path, destination_path: pathlib.Path) -> None:
+    source_path.rename(destination_path)
+
+# ======================================
+# Move operation
+# ======================================
+def move_resource(source_path: pathlib.Path, destination_path: pathlib.Path) -> None:
+    source_path.rename(destination_path)
