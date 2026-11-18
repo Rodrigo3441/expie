@@ -3,13 +3,13 @@ import io
 import os
 import zipfile
 import tempfile
-from src.lan_file_manager.filesystem_access import directory_operations as filesystem_access
+from ..filesystem_access import directory_operations as filesystem_access
 
-CHUNK_SIZE = 1024 * 1024
 
 class FileManagement:
-    def __init__(self, default_path: pathlib.Path):
+    def __init__(self, default_path: pathlib.Path, default_chunk_size: int):
         self.default_path = default_path.resolve()
+        self.default_chunk_size = default_chunk_size
 
     
     def __is_requested_path_inside_root_path(self, requested_path: pathlib.Path) -> bool:
@@ -79,17 +79,17 @@ class FileManagement:
         
         resolved_path = self.__resolve_path_name(relative_requested_path_str)
 
-        if self.__is_requested_path_inside_root_path(resolved_path):
-            if resolved_path.exists():
-                if resolved_path.is_dir():
-                    return filesystem_access.list_directory(resolved_path)
-                
-                else:
-                    raise NotADirectoryError('The requested path does not correspond to a directory.')
-            else:
-                raise FileNotFoundError('The requested path does not exist.')
-        else:
+        if not self.__is_requested_path_inside_root_path(resolved_path):
             raise PermissionError('The requested path is outside the allowed path.')
+        
+        if not resolved_path.exists():
+            raise FileNotFoundError('The requested path does not exist.')
+        
+        if not resolved_path.is_dir():
+            raise NotADirectoryError('The requested path does not correspond to a directory.')
+
+        return filesystem_access.list_directory(resolved_path)
+            
 
 
     def upload_file(
@@ -126,7 +126,7 @@ class FileManagement:
         if not destination_dir.startswith('/'):
             raise ValueError('The requested path is not valid.')
 
-        if not filename or '/' in filename or '\\' in filename:
+        if not filename or '/' in filename or '\\' in filename or filename in ('.', '..'):
             raise ValueError('The filename is invalid.')
 
 
@@ -134,41 +134,39 @@ class FileManagement:
 
         resolved_path = self.__resolve_path_name(relative_requested_path_str)
 
-        if self.__is_requested_path_inside_root_path(resolved_path):
-            if not resolved_path.exists():
-                filesystem_access.create_directory(resolved_path)
-
-                
-            if not resolved_path.is_dir():
-                raise NotADirectoryError('The destination path is not a directory.')
-
-            filename_destination = resolved_path / filename
-
-            if filename_destination.exists() and filename_destination.is_dir():
-                raise IsADirectoryError('This file cannot be uploaded.')
-
-
-            if self.__is_requested_path_inside_root_path(filename_destination):
-                temp_file_path = filesystem_access.create_temp_file(resolved_path)
-
-                try:
-                    while True:
-                        chunk = file_stream.read(CHUNK_SIZE)
-                        if not chunk:
-                            break
-
-                        filesystem_access.write_to_temp_file(temp_file_path, chunk)
-
-                    filesystem_access.finalize_upload(temp_file_path, filename_destination)
-                    
-                except Exception:
-                    filesystem_access.delete_temp_file(temp_file_path)
-                    raise 
-
-            else:
-                raise PermissionError('The requested file destination path is outside the allowed path.')
-        else:
+        if not self.__is_requested_path_inside_root_path(resolved_path):
             raise PermissionError('The requested path is outside the allowed path.')
+        
+        if not resolved_path.exists():
+            filesystem_access.create_directory(resolved_path)
+ 
+        if not resolved_path.is_dir():
+            raise NotADirectoryError('The destination path is not a directory.')
+
+        filename_destination = resolved_path / filename
+
+        if filename_destination.exists() and filename_destination.is_dir():
+            raise IsADirectoryError('This file cannot be uploaded.')
+
+
+        if not self.__is_requested_path_inside_root_path(filename_destination):
+            raise PermissionError('The requested file destination path is outside the allowed path.')
+        
+        temp_file_path = filesystem_access.create_temp_file(resolved_path)
+
+        try:
+            while True:
+                chunk = file_stream.read(self.default_chunk_size)
+                if not chunk:
+                    break
+
+                filesystem_access.write_to_temp_file(temp_file_path, chunk)
+
+            filesystem_access.finalize_upload(temp_file_path, filename_destination)
+            
+        except Exception:
+            filesystem_access.delete_temp_file(temp_file_path)
+            raise             
         
 
     def open_file(self, path: str) -> pathlib.Path:
@@ -305,3 +303,96 @@ class FileManagement:
             filesystem_access.delete_directory(final_resolved_path)
         else:
             filesystem_access.delete_file(final_resolved_path)
+
+
+    def rename_resource(self, path: str, old_name: str, new_name: str) -> None:
+        if not path.startswith('/'):
+            raise ValueError('The requested path is not valid.')
+
+        if not old_name or not new_name:
+            raise ValueError('The resource name cannot be empty.')
+
+        if (
+            '/' in old_name or '\\' in old_name or old_name in ('.', '..')
+            or '/' in new_name or '\\' in new_name or new_name in ('.', '..')
+        ):
+            raise ValueError('The resource name is invalid.')
+
+        relative_requested_path_str = self.__convert_path_name_into_relative(path)
+        resolved_path = self.__resolve_path_name(relative_requested_path_str)
+
+        if not self.__is_requested_path_inside_root_path(resolved_path):
+            raise PermissionError('The requested path is outside the allowed path.')
+
+        if not resolved_path.exists():
+            raise FileNotFoundError('The current path does not exist.')
+
+        if not resolved_path.is_dir():
+            raise NotADirectoryError('The current path is not a folder.')
+
+        source_path = self.__resolve_path_name(resolved_path / old_name)
+        destination_path = self.__resolve_path_name(resolved_path / new_name)
+
+        if not self.__is_requested_path_inside_root_path(source_path):
+            raise PermissionError('The source path is outside the allowed path.')
+
+        if not self.__is_requested_path_inside_root_path(destination_path):
+            raise PermissionError('The destination path is outside the allowed path.')
+
+        if not source_path.exists():
+            raise FileNotFoundError('The requested resource does not exist.')
+
+        if source_path == destination_path:
+            return
+
+        if destination_path.exists():
+            raise FileExistsError('A resource with this name already exists.')
+
+        filesystem_access.rename_resource(source_path, destination_path)
+
+
+    def move_resource(self, source_path: str, destination_path: str) -> None:
+        if not source_path.startswith('/') or not destination_path.startswith('/'):
+            raise ValueError('The requested path is not valid.')
+
+        relative_source_path_str = self.__convert_path_name_into_relative(source_path)
+        relative_destination_path_str = self.__convert_path_name_into_relative(destination_path)
+
+        resolved_source_path = self.__resolve_path_name(relative_source_path_str)
+        resolved_destination_path = self.__resolve_path_name(relative_destination_path_str)
+
+        if not self.__is_requested_path_inside_root_path(resolved_source_path):
+            raise PermissionError('The source path is outside the allowed path.')
+
+        if not self.__is_requested_path_inside_root_path(resolved_destination_path):
+            raise PermissionError('The destination path is outside the allowed path.')
+
+        if not resolved_source_path.exists():
+            raise FileNotFoundError('The requested resource does not exist.')
+
+        if resolved_source_path == self.default_path:
+            raise PermissionError('Cannot move the storage root directory.')
+
+        if not resolved_destination_path.exists():
+            raise FileNotFoundError('The destination path does not exist.')
+
+        if not resolved_destination_path.is_dir():
+            raise NotADirectoryError('The destination path is not a folder.')
+
+        if resolved_source_path.is_dir() and resolved_destination_path.is_relative_to(resolved_source_path):
+            raise ValueError('Cannot move a directory into itself or one of its subdirectories.')
+
+        final_destination_path = self.__resolve_path_name(
+            resolved_destination_path / resolved_source_path.name
+        )
+
+        if not self.__is_requested_path_inside_root_path(final_destination_path):
+            raise PermissionError('The requested destination is outside the allowed path.')
+
+        if resolved_source_path == final_destination_path:
+            return
+
+        if final_destination_path.exists():
+            raise FileExistsError('A resource with this name already exists in the destination.')
+
+        filesystem_access.move_resource(resolved_source_path, final_destination_path)
