@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>LAN File Manager</h1>
+    </header>
+
+    <main>
+        <dialog id="action_dialog">
+            <form id="dialog_form">
+                <h2 id="dialog_title"></h2>
+                
+                <div id="dialog_error" hidden></div>
+
+                <div id="dialog_content"></div>
+
+                <div id="dialog_actions">
+                    <button type="button" id="dialog_cancel">Cancel</button>
+                    <button type="submit" id="dialog_confirm">Confirm</button>
+                </div>
+            </form>
+        </dialog>
+
+        <section id="directory_content">
+            <h2>Files and directories</h2>
+
+            <div id="file_list">
+                <!-- Directory contents will be rendered here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="/static/js/app.js" defer></script>
+</body>
+</html>
