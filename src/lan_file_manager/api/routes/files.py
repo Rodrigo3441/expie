@@ -3,7 +3,7 @@ from ...file_management.management_operations import FileManagement
 from ..dependencies import return_file_management
 from pydantic import BaseModel
 
-router = APIRouter()
+router = APIRouter(prefix='/api')
 
 class ResponseModel(BaseModel):
     success: bool
@@ -11,7 +11,7 @@ class ResponseModel(BaseModel):
     error: dict | None
 
 
-@router.get('/', response_model=ResponseModel)
+@router.get('/contents', response_model=ResponseModel)
 def list_directory_content(
     file_management: FileManagement = Depends(return_file_management),
     path: str =  '/'
@@ -27,7 +27,7 @@ def list_directory_content(
  
 
 
-@router.post('/api/upload')
+@router.post('/upload')
 def upload_file(
     file_management: FileManagement = Depends(return_file_management),
     file: UploadFile = File(...),
@@ -47,7 +47,7 @@ def upload_file(
     }
 
 
-@router.patch('/api/rename')
+@router.patch('/rename')
 def rename_file(
     path: str,
     old_name: str,
@@ -63,7 +63,7 @@ def rename_file(
     }
 
 
-@router.patch('/api/move')
+@router.patch('/move')
 def move_resource(
     source_path: str,
     destination_path: str,
@@ -78,7 +78,7 @@ def move_resource(
     }
 
 
-@router.delete('/api/delete')
+@router.delete('/delete')
 def delete_file(
     path: str,
     name: str | None = None,
