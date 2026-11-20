@@ -261,6 +261,9 @@ class FileManagement:
     
         if not self.__is_requested_path_inside_root_path(final_resolved_path):
             raise PermissionError('The requested path for folder creation is outside the allowed path.')
+
+        if final_resolved_path.exists():
+            raise FileExistsError('A resource with this name already exists.')
         
         filesystem_access.create_directory(final_resolved_path)
 
