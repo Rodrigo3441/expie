@@ -7,9 +7,19 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <header>
+    <header id="main_header">
         <h1>LAN File Manager</h1>
     </header>
+
+    <section id="second_header">
+        <div id="upload_section">
+            <a href="#" id="upload_resource_btn">Upload file</a>
+        </div>
+
+        <div id="create_dir_section">
+            <a href="#" id="create_dir_btn">Create new folder</a>
+        </div>
+    </section>
 
     <main>
         <dialog id="action_dialog">
@@ -17,6 +27,8 @@
                 <h2 id="dialog_title"></h2>
                 
                 <div id="dialog_error" hidden></div>
+
+                <div id="upload_file_list"></div>
 
                 <div id="dialog_content"></div>
 
@@ -36,6 +48,9 @@
         </section>
     </main>
 
-    <script src="/static/js/app.js" defer></script>
+    <input type="file" id="file_input" multiple hidden>
+    <input type="file" id="folder_input" webkitdirectory multiple hidden>
+
+    <script type="module" src="/static/js/app.js" defer></script>
 </body>
 </html>
