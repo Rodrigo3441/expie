@@ -1,9 +1,10 @@
-from fastapi import FastAPI, APIRouter, Request, HTTPException
+from fastapi import FastAPI, APIRouter, Request, HTTPException, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from contextlib import asynccontextmanager
 from src.lan_file_manager.api.routes import (files, directories, downloads)
+from src.lan_file_manager.api.dependencies import return_file_management
 from src.lan_file_manager.api.exception_handlers import (
     handle_file_not_found,
     handle_not_a_directory,
@@ -66,15 +67,26 @@ app.add_exception_handler(FileExistsError, handle_file_exists_exception)
 
 @app.get('/', response_class=HTMLResponse)
 @app.get('/{path:path}', response_class=HTMLResponse)
-async def serve_frontend(request: Request, path: str = ''):
+async def serve_frontend(
+    request: Request, 
+    path: str = '',
+    file_management: FileManagement = Depends(return_file_management)
+):
     if path == 'api' or path.startswith('api/'):
         raise HTTPException(status_code=404)
 
-    return templates.TemplateResponse(
-        request=request,
-        name='index.html',
-        context={}
-    )
+    requested_path = '/' + path
+
+    if file_management.is_requested_path_a_dir(requested_path):
+        return templates.TemplateResponse(
+            request=request,
+            name='index.html',
+            context={}
+        )
+
+    requested_path = file_management.open_file(requested_path)
+
+    return FileResponse(requested_path)
 
 
 
