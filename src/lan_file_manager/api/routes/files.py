@@ -35,7 +35,6 @@ def upload_file(
 ):
     try:
         file_management.upload_file(file.file, path, file.filename)
-        file.close()
         
     finally:
         file.close()
