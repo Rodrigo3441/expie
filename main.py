@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse
 from contextlib import asynccontextmanager
-from src.lan_file_manager.api.routes import (files, directories, downloads)
+from src.lan_file_manager.api.routes import (files, directories, downloads, error_pages)
 from src.lan_file_manager.api.dependencies import return_file_management
 from src.lan_file_manager.api.exception_handlers import (
     handle_file_not_found,
@@ -12,7 +12,7 @@ from src.lan_file_manager.api.exception_handlers import (
     handle_is_a_directory,
     handle_value_error,
     handle_unexpected_exception,
-    handle_file_exists_exception
+    handle_file_exists_exception,
 )
 
 import pathlib
@@ -34,6 +34,7 @@ default_chunk_size = load_default_chunk_size_config()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # global variable for startup
+    app.state.templates = templates
     app.state.file_management = FileManagement(default_path, default_chunk_size)
     yield
 
@@ -41,7 +42,7 @@ async def lifespan(app: FastAPI):
 BASE_DIR = pathlib.Path(__file__).resolve().parent
 FRONTEND_DIR = BASE_DIR / 'src' / 'lan_file_manager' / 'frontend'
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, openapi_url=None)
 
 app.mount(
     '/static',
@@ -51,10 +52,12 @@ app.mount(
 
 templates = Jinja2Templates(directory=FRONTEND_DIR / 'templates')
 
+
 # include the api endpoints for the application
 app.include_router(files.router)
 app.include_router(directories.router)
 app.include_router(downloads.router)
+app.include_router(error_pages.router)
 
 # include the exception handlers for the application
 app.add_exception_handler(FileNotFoundError, handle_file_not_found)
@@ -72,21 +75,27 @@ async def serve_frontend(
     path: str = '',
     file_management: FileManagement = Depends(return_file_management)
 ):
-    if path == 'api' or path.startswith('api/'):
-        raise HTTPException(status_code=404)
 
     requested_path = '/' + path
 
-    if file_management.is_requested_path_a_dir(requested_path):
+    try:
+        if file_management.is_requested_path_a_dir(requested_path):
+            return templates.TemplateResponse(
+                request=request,
+                name='index.html',
+                context={}
+            )
+
+        requested_path = file_management.open_file(requested_path)
+        return FileResponse(requested_path)
+
+    except FileNotFoundError:
         return templates.TemplateResponse(
             request=request,
-            name='index.html',
-            context={}
+            name='404.html',
+            context={},
+            status_code=404
         )
-
-    requested_path = file_management.open_file(requested_path)
-
-    return FileResponse(requested_path)
 
 
 
