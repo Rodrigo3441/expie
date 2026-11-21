@@ -1,0 +1,311 @@
+/* ==============================
+   body configuration
+================================= */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* ==============================
+   Main header
+================================= */
+#main_header {
+    margin: 0;
+    height: 110px;
+    background-color: #6487dc;
+    background-image: url(/static/assets/images/globeWallpaper.jpg);
+    background-repeat: no-repeat;
+    background-position: left;
+    align-items: center;
+    margin: 0 auto;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.main_title {
+    vertical-align: middle;
+    color: #ffffff;
+    text-decoration: underline;
+    font-weight: 0;
+    flex-shrink: 0;
+    font-size: 32px;
+    margin: 0;
+}
+
+#second_header {
+    background-color: #e2e9f9;
+    padding: 10px;
+}
+
+@media (max-width: 600px) {
+    #main_header {
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .main_title {
+        font-size: 22px;
+    }
+
+    /* .searchbox {
+        flex: 1;
+        min-width: 0;
+    } */
+
+    .searchbox input {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+#upload_section a {
+    color: #ffffff;
+    font-size: 16px;
+}
+
+#upload_section {
+    padding-top: 50px;
+    color: #ffffff;
+}
+
+/* ==============================
+   Directory table
+================================= */
+
+#file_table {
+    width: 100%;
+    height: auto;
+    table-layout: auto;
+}
+
+#file_table tr {
+    border-bottom: 1px solid #eeeeee;
+}
+
+.name_column,
+.date_column,
+.size_column,
+.actions_column {
+    width: 100%;
+}
+
+.filename_container {
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.no_file_message {
+    padding: 10px;
+}
+
+
+/* ==============================
+   File and directory icons
+================================= */
+
+.entry_name a {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    text-decoration: none;
+}
+
+.directory .entry_name a::before,
+.file .entry_name a::before {
+    content: "";
+    display: inline-block;
+    flex-shrink: 0;
+    width: 25px;
+    height: 25px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.directory .entry_name a::before {
+    background-image: url("/static/assets/images/folderIcon.png");
+}
+
+.file .entry_name a::before {
+    background-image: url("/static/assets/images/fileIcon.png");
+}
+
+
+/* ==============================
+   Action buttons
+================================= */
+
+.action_buttons {
+    display: inline-flex;
+    align-items: center;
+    gap: 20px;
+    height: auto;
+    text-decoration: none;
+}
+
+.action_buttons_list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.action_buttons_list a {
+    display: inline-block;
+    text-decoration: none;
+}
+
+.action_buttons_list a::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    vertical-align: middle;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.download_button::before {
+    background-image: url("/static/assets/images/saveIcon.png");
+}
+
+.rename_button::before {
+    background-image: url("/static/assets/images/renameIcon.png");
+}
+
+.delete_button::before {
+    background-image: url("/static/assets/images/deleteIcon.png");
+}
+
+.move_button::before {
+    background-image: url("/static/assets/images/moveIcon.png");
+}
+
+
+/* ==============================
+   Action dialog
+================================= */
+
+#action_dialog {
+    max-width: 800px;
+    max-height: 700px;
+    padding: 10px;
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: inherit;
+    overflow: visible;
+}
+
+#action_dialog[open] {
+    display: block;
+    max-width: 90%;
+}
+
+#action_dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+
+/* Dialog content */
+
+#dialog_content {
+    padding: 5px 5px 10px;
+    overflow-wrap: break-word;
+}
+
+#dialog_error {
+    padding: 5px;
+}
+
+#dialog_actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+
+/* ==============================
+   Upload dialog
+================================= */
+
+.upload_button_container {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding-bottom: 10px;
+}
+
+
+/* Upload file list */
+
+#upload_file_list {
+    max-width: 600px;
+    max-height: 500px;
+    overflow: auto;
+}
+
+
+/* Individual upload item */
+
+.upload_file_item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 80px 200px;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+}
+
+.upload_file_name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.upload_file_size {
+    text-align: right;
+    white-space: nowrap;
+}
+
+
+/* Upload progress */
+
+.upload_file_progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.upload_file_progress [role="progressbar"] {
+    flex: 1;
+    min-width: 0;
+}
+
+.upload_file_progress span {
+    flex: 0 0 40px;
+    text-align: right;
+}
+
+
+/* ==============================
+   Responsive styles
+================================= */
+
+@media (max-width: 800px) {
+    .action_buttons_list {
+        flex-direction: column;
+        align-items: stretch;
+        height: auto;
+    }
+}
