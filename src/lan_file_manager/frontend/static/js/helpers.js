@@ -80,3 +80,7 @@ export function createMoveButton(file, path, onMove){
 
     return moveButton;
 }
+
+export function fileSizeToStringFormatted(filesize){
+    return `${(filesize / 1024 / 1024).toFixed(2)} MB`;
+}
