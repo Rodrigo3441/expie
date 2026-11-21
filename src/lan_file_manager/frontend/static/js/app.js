@@ -13,7 +13,8 @@ import {
     createDownloadButton,
     createRenameButton,
     createDeleteButton,
-    createMoveButton
+    createMoveButton,
+    fileSizeToStringFormatted
 } from './helpers.js';
 
 const dialogArea = document.getElementById("action_dialog")
@@ -24,6 +25,7 @@ const dialogErrorContainer = document.getElementById("dialog_error");
 const dialogUploadList = document.getElementById("upload_file_list");
 const dialogCancelButton = document.getElementById("dialog_cancel");
 const dialogSubmitButton = document.getElementById("dialog_confirm");
+const dialogCloseButton = document.getElementById("close_button");
 
 const createDirButton = document.getElementById("create_dir_btn")
 
@@ -41,6 +43,7 @@ let selectedFiles = [];
 const uploadProgressItems = new Map();
 
 dialogCancelButton.addEventListener("click", closeDialog);
+dialogCloseButton.addEventListener("click", closeDialog);
 dialogForm.addEventListener("submit", handleDialogSubmit);
 createDirButton.addEventListener("click", (event) => {
     event.preventDefault();
@@ -60,6 +63,7 @@ document.addEventListener("dragover", (event) => {
 
 document.addEventListener("drop", (event) => {
     event.preventDefault();
+    cleanUploadDialog();
 
     dialogUploadList.hidden = false;
     const files = Array.from(event.dataTransfer.files);
@@ -67,7 +71,7 @@ document.addEventListener("drop", (event) => {
     if (!files.length) return;
 
     selectedFiles = files;
-    currentPath = window.location.pathname;
+    currentPath = decodeURIComponent(window.location.pathname);
 
     showUploadDialog(currentPath);
     renderSelectedFiles(selectedFiles);
@@ -128,7 +132,10 @@ async function handleDialogSubmit(event) {
                 }
 
                 dialogCancelButton.disabled = true;
-                dialogSubmitButton.disabled = true
+                dialogSubmitButton.disabled = true;
+
+                dialogContent.hidden = true;
+
                 await uploadFiles(selectedFiles, currentPath, (file, percentage) => {
                     const updateProgress = uploadProgressItems.get(file);
                     updateProgress(percentage);
@@ -140,6 +147,7 @@ async function handleDialogSubmit(event) {
             } catch (error) {
                 dialogErrorContainer.textContent = error.message;
                 dialogErrorContainer.hidden = false;
+                dialogContent.hidden = false;
             }
             break;
         case "move":
@@ -193,27 +201,47 @@ function renderSelectedFiles(files) {
 }
 
 function createUploadProgressItem(file) {
+    // create the container for each uploaded file
     const container = document.createElement("div");
     container.classList.add("upload_file_item");
 
+    // create the column for the filename
     const filename = document.createElement("span");
+    filename.classList.add("upload_file_name");
     filename.textContent = file.webkitRelativePath || file.name;
+    filename.title = file.webkitRelativePath || file.name;
 
+    // create the column for the file size
     const fileSize = document.createElement("span");
-    fileSize.textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+    fileSize.classList.add("upload_file_size");
+    fileSize.textContent = fileSizeToStringFormatted(file.size);
 
-    const progress = document.createElement("progress");
-    progress.max = 100;
-    progress.value = 0;
+    // create the column for progress bar
+    const progressContainer = document.createElement("div");
+    progressContainer.classList.add("upload_file_progress");
 
+    // create the progress bar container
+    const progress = document.createElement("div");
+    progress.setAttribute("role", "progressbar");
+    progress.classList.add("animate");
+    
+    // create the progress bar  
+    const progressFill = document.createElement("div");
+    progressFill.style.width = "0%";
+
+    progress.append(progressFill);
+
+    // create the percentage column
     const percentage = document.createElement("span");
     percentage.textContent = "0%";
 
-    container.append(filename, fileSize, progress, percentage);
+    progressContainer.append(progress, percentage);
+    container.append(filename, fileSize, progressContainer);
+
     dialogUploadList.append(container);
 
     uploadProgressItems.set(file, (value) => {
-        progress.value = value;
+        progressFill.style.width = `${value}%`;
         percentage.textContent = `${value}%`;
     });
 }
@@ -228,6 +256,7 @@ function showRenameDialog(file, path) {
 
     const inputRename = document.createElement("input");
     inputRename.id = "new_name";
+    inputRename.type = "text";
     inputRename.value = file.name;
 
     dialogContent.appendChild(inputRename);
@@ -275,6 +304,7 @@ async function showCreateDirDialog(path){
 
     const inputCreateDir = document.createElement("input");
     inputCreateDir.id = "new_directory";
+    inputCreateDir.type = "text";
 
     dialogContent.appendChild(inputCreateDir);
 
@@ -286,27 +316,42 @@ function showUploadDialog(path){
     currentPath = path;
     
     dialogTitle.textContent = "Uploading files";
+    // dialogContent.replaceChildren();
+    // message for the upload dialog
+    const dialogContentMessage = document.createElement("p");
+    dialogContentMessage.textContent = "Select files or a folder you want to upload."
+    dialogContent.appendChild(dialogContentMessage);
 
+    // container for the upload buttons 
+    const uploadButtonsContainer = document.createElement("div");
+    uploadButtonsContainer.classList.add("upload_button_container");
+
+    // button for uploading FILES
     const uploadFilesButton = document.createElement("button");
     uploadFilesButton.type = "button";
-    uploadFilesButton.textContent = "Select files";
+    uploadFilesButton.textContent = "Choose files";
 
     uploadFilesButton.addEventListener("click", () => {
         fileInput.click();
     });
 
+    // button for uploading A DIRECTORY
     const uploadFoldersButton = document.createElement("button");
     uploadFoldersButton.type = "button";
-    uploadFoldersButton.textContent = "Select folders";
+    uploadFoldersButton.textContent = "Choose a folder";
 
     uploadFoldersButton.addEventListener("click", () => {
         folderInput.click();
     });
 
-    dialogContent.append(
+    // append both button into the dialog content
+    uploadButtonsContainer.append(
         uploadFilesButton,
         uploadFoldersButton
     );
+
+    // append the upload button container into dialog content
+    dialogContent.appendChild(uploadButtonsContainer);
 
     openDialog();
 }
@@ -325,24 +370,46 @@ function showMoveDialog(file, path) {
 
     const inputDestination = document.createElement("input");
     inputDestination.id = "destination_path";
+    inputDestination.type = "text";
     inputDestination.value = `${path}`;
     dialogContent.appendChild(inputDestination);
 
     openDialog();
 }
 
-function createActionButtonsContainer(file, path){
-    // create a div for the action buttons
-    const actionButtons = document.createElement("div");
+function createActionButtonsContainer(file, path) {
+    // Create the action buttons column
+    const actionButtons = document.createElement("td");
     actionButtons.classList.add("action_buttons");
 
-    // append the action buttons inside the respective DIV
-    actionButtons.append(createDownloadButton(file, path));
-    actionButtons.append(createRenameButton(file, path, showRenameDialog));
-    actionButtons.append(createDeleteButton(file, path, showDeleteDialog));
-    actionButtons.append(createMoveButton(file, path, showMoveDialog));
+    // Create the list
+    const actionButtonsList = document.createElement("ul");
+    actionButtonsList.classList.add("action_buttons_list");
 
-    return actionButtons
+    // Create individual list items
+    const downloadItem = document.createElement("li");
+    downloadItem.append(createDownloadButton(file, path));
+
+    const renameItem = document.createElement("li");
+    renameItem.append(createRenameButton(file, path, showRenameDialog));
+
+    const deleteItem = document.createElement("li");
+    deleteItem.append(createDeleteButton(file, path, showDeleteDialog));
+
+    const moveItem = document.createElement("li");
+    moveItem.append(createMoveButton(file, path, showMoveDialog));
+
+    // Append items to the list
+    actionButtonsList.append(
+        downloadItem,
+        renameItem,
+        deleteItem,
+        moveItem
+    );
+
+    actionButtons.append(actionButtonsList);
+
+    return actionButtons;
 }
 
 // renders the directory content inside the web page
@@ -354,52 +421,73 @@ function renderDirectory(entries, path) {
 
     if (entries.length === 0){
         const fileListEmptyMessage = document.createElement("p");
+        fileListEmptyMessage.classList.add("no_file_message");
         fileListEmptyMessage.textContent = "No files!";
         fileList.appendChild(fileListEmptyMessage);
         return;
     }
 
-    entries.forEach((file) => {
-        const container = document.createElement("div");
-        let filename = null;
+    // Sorts the folder contend for displaying folders first
+    let orderedEntries = entries.toSorted((a, b) => {
+        if (a.type === "DIRECTORY" && b.type === "FILE") {
+            return -1;
+        } else if (a.type === "FILE" && b.type === "DIRECTORY") {
+            return 1;
+        } else {
+            return a.name.localeCompare(b.name);
+        }
+    });
+
+    orderedEntries.forEach((file) => {
+        let container = document.createElement("tr");
         container.classList.add("entry");
+
+        // define the filename link
+        let filename = document.createElement("a");
+        filename.textContent = file.name;
+        filename.href = `${normalizedPath}${file.name}`;
 
         if (file.type === "DIRECTORY") {
             container.classList.add("directory");
-
-            filename = document.createElement("a");
-            filename.textContent = file.name;
-            filename.href = `${normalizedPath}${file.name}`;
         } else {
             container.classList.add("file");
-
-            filename = document.createElement("span");
-            filename.textContent = file.name;
+            filename.setAttribute("target", "_blank");
         }
 
-        // create a div for the type area
-        const type = document.createElement("div");
+        // create a column for the name area
+        const name = document.createElement("td");
+        name.classList.add("entry_name");
+
+        const filenameContainer = document.createElement("div");
+        filenameContainer.classList.add("filename_container");  
+
+        filenameContainer.appendChild(filename);
+        name.appendChild(filenameContainer);
+
+        // create a column for the type area
+        const type = document.createElement("td");
         type.classList.add("entry_type");
         type.textContent = file.type;
         
-        // create a div for the name area
-        const name = document.createElement("div");
-        name.classList.add("entry_info");
-        name.appendChild(filename);
-        
-        // create a div for the datetime area
-        const datetime = document.createElement("div");
-        datetime.classList.add("datetime");
+        // create a column for the datetime area
+        const datetime = document.createElement("td");
+        datetime.classList.add("entry_datetime");
         datetime.textContent = formatUnixTimestamp(file.modified_at);
 
+        // create a column for the size area
+        const size = document.createElement("td");
+        size.classList.add("entry_size");
+        size.textContent = file.type === "FILE" ? fileSizeToStringFormatted(file.size) : "n/a";
         
         const actionButtons = createActionButtonsContainer(file, normalizedPath);
 
         //apend the file entry section into the container
-        container.appendChild(type);
+        // container.appendChild(type);
         container.appendChild(name);
         container.appendChild(datetime);
+        container.appendChild(size);
         container.appendChild(actionButtons);
+        
         
         fileList.append(container)
     })
@@ -416,14 +504,12 @@ function openDialog() {
 }
 
 function closeDialog() {
-    dialogArea.close();
+    dialogContent.replaceChildren()
     dialogUploadList.hidden = true;
+    dialogArea.close();
 }
 
 async function return_content(path = "/") {
     const entries = await loadDirectory(path);
     renderDirectory(entries, path);
 }
-
-
-
