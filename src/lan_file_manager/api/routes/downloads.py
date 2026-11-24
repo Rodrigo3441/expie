@@ -7,12 +7,10 @@ import mimetypes
 import os
 
 router = APIRouter()
-CHUNK_SIZE = get_config()['default_chunk_size']
 
-
-def generate_file_chunks(requested_resource):
+def generate_file_chunks(requested_resource, chunk_size):
     with requested_resource.open('rb') as resource:
-        while chunk := resource.read(CHUNK_SIZE):
+        while chunk := resource.read(chunk_size):
             yield chunk
 
 
@@ -48,7 +46,7 @@ def download_file(
 
     
     return StreamingResponse(
-        generate_file_chunks(requested_resource),
+        generate_file_chunks(requested_resource, file_management.default_chunk_size),
         headers={
             'Content-Disposition': f'attachment; filename="{filename}"',
             'Content-Type': content_type
