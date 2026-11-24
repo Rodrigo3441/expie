@@ -5,6 +5,7 @@ from fastapi.responses import HTMLResponse, FileResponse
 from contextlib import asynccontextmanager
 from src.lan_file_manager.api.routes import (files, directories, downloads, error_pages)
 from src.lan_file_manager.api.dependencies import return_file_management
+from src.lan_file_manager.initialization.validation import validate_storage_path
 from src.lan_file_manager.api.exception_handlers import (
     handle_file_not_found,
     handle_not_a_directory,
@@ -16,24 +17,23 @@ from src.lan_file_manager.api.exception_handlers import (
 )
 
 import pathlib
+import sys
 
 from src.lan_file_manager.config.config import get_config
 from src.lan_file_manager.file_management.management_operations import FileManagement
 
-def load_default_path_config() -> pathlib.Path:
-    config = get_config()
-    return pathlib.Path(config['default_path'])
-
-def load_default_chunk_size_config() -> int:
-    config = get_config()
-    return config['default_chunk_size']
-
-default_path = load_default_path_config()
-default_chunk_size = load_default_chunk_size_config()
+# avoids tracebacks on console
+sys.tracebacklimit = 0
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # global variable for startup
+    config = get_config()
+
+    default_path = pathlib.Path(config['default_path'])
+    default_chunk_size = config['default_chunk_size']
+    default_project_path = pathlib.Path(__file__).resolve().parent
+
+    validate_storage_path(default_path, default_project_path)
     app.state.templates = templates
     app.state.file_management = FileManagement(default_path, default_chunk_size)
     yield
@@ -96,8 +96,4 @@ async def serve_frontend(
             context={},
             status_code=404
         )
-
-
-
-
 
