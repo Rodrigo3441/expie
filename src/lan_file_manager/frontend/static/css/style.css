@@ -14,7 +14,7 @@ body {
     margin: 0;
     height: 110px;
     background-color: #6487dc;
-    background-image: url(/static/assets/images/globeWallpaper.jpg);
+    background-image: url(/static/assets/images/icons/globe-wallpaper.jpg);
     background-repeat: no-repeat;
     background-position: left;
     align-items: center;
@@ -72,6 +72,91 @@ body {
 }
 
 /* ==============================
+   Navigation bar div
+================================= */
+#nav_buttons {
+    line-height: 30px;
+    color: #ffffff;
+    font-size: 14px;
+    border-top: 1px solid #ffffff;
+    padding-left: 5px;
+    background: linear-gradient(
+     to bottom,
+    #81899c 0%,
+    #81899c 2.5%,
+    #60687d 3%,
+    #3a414f 49.5%,
+    #111111 50%,
+    #111111 73%,
+    #3e4663 100%
+    );
+}
+
+/*
+
+*/
+#nav_buttons li {
+    color: #ffffff;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    background: transparent;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+    cursor: pointer;
+}
+
+#nav_buttons li:hover {
+    border-radius: 5px 5px 0 0;
+    background: linear-gradient(
+        to bottom,
+        #6397d6 0%,
+        #366ab3 48%,
+        #06296d 50%,
+        #164fa6 78%,
+        #3bc8f6 100%
+    );
+    border: 1px solid #0b1626;
+    box-shadow: 
+        /* Brilho interno azul-claro nas bordas do botão */
+        inset 0 1px 0 rgba(173, 216, 255, 0.75),
+        inset 0 0 0 1px rgba(105, 175, 245, 0.35),
+        /* Contorno externo sutil que destaca o botão da barra escura */
+        0 0 0 1px rgba(255, 255, 255, 0.22);
+    }
+
+#nav_buttons a {
+    color: #ffffff;
+    display: block;
+}
+
+#button_icon {
+    margin-right: 5px;
+}
+
+#home_btn, #back_btn,
+#create_dir_btn, #upload_resource_btn {
+    background-repeat: no-repeat;
+    background-position: left center;
+    padding-left: 20px;
+}
+
+#home_btn {
+    background-image: url("/static/assets/images/icons/home-icon.png");
+}
+
+#back_btn {
+    background-image: url("/static/assets/images/icons/back-icon.png");
+    padding-left: 29px;
+}
+
+#create_dir_btn {
+    background-image: url("/static/assets/images/icons/newfile-icon.png");
+}
+
+#upload_resource_btn {
+    background-image: url("/static/assets/images/icons/upload-icon.png");
+}
+/* ==============================
    Directory table
 ================================= */
 
@@ -127,11 +212,11 @@ body {
 }
 
 .directory .entry_name a::before {
-    background-image: url("/static/assets/images/folderIcon.png");
+    background-image: url("/static/assets/images/icons/folder-icon.png");
 }
 
 .file .entry_name a::before {
-    background-image: url("/static/assets/images/fileIcon.png");
+    background-image: url("/static/assets/images/icons/file-icon.png");
 }
 
 
@@ -175,19 +260,19 @@ body {
 }
 
 .download_button::before {
-    background-image: url("/static/assets/images/saveIcon.png");
+    background-image: url("/static/assets/images/icons/save-icon.png");
 }
 
 .rename_button::before {
-    background-image: url("/static/assets/images/renameIcon.png");
+    background-image: url("/static/assets/images/icons/rename-icon.png");
 }
 
 .delete_button::before {
-    background-image: url("/static/assets/images/deleteIcon.png");
+    background-image: url("/static/assets/images/icons/delete-icon.png");
 }
 
 .move_button::before {
-    background-image: url("/static/assets/images/moveIcon.png");
+    background-image: url("/static/assets/images/icons/move-icon.png");
 }
 
 
