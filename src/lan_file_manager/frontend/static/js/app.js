@@ -42,6 +42,12 @@ let selectedFiles = [];
 
 const uploadProgressItems = new Map();
 
+function asdf(path) {
+    return path
+        .replace(/\/+/g, '/')
+        .replace(/\/+$/, '') || '/';
+}
+
 dialogCancelButton.addEventListener("click", closeDialog);
 dialogCloseButton.addEventListener("click", closeDialog);
 dialogForm.addEventListener("submit", handleDialogSubmit);
@@ -68,7 +74,10 @@ document.addEventListener("drop", (event) => {
     dialogUploadList.hidden = false;
     const files = Array.from(event.dataTransfer.files);
 
-    if (!files.length) return;
+    if (!files.length) {
+        closeDialog();
+        return;
+    };
 
     selectedFiles = files;
     currentPath = decodeURIComponent(window.location.pathname);
@@ -415,7 +424,11 @@ function createActionButtonsContainer(file, path) {
 // renders the directory content inside the web page
 function renderDirectory(entries, path) {
     const normalizedPath = normalizePathName(path);
-
+    
+    if (window.location.pathname !== normalizedPath) {
+        window.history.replaceState(null, '', normalizedPath);
+    }
+    
     const fileList = document.getElementById("file_list");
     fileList.replaceChildren();
 
@@ -512,4 +525,5 @@ function closeDialog() {
 async function return_content(path = "/") {
     const entries = await loadDirectory(path);
     renderDirectory(entries, path);
+    
 }
