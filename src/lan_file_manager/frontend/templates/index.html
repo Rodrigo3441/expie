@@ -3,29 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Expie File Server</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/7.css">
-    
+    <link rel="icon" href="/static/assets/images/error-page/expie-ico.png">
 </head>
 <body>
     <div id="main_header">
         <div>
             <p class="main_title">Expie File Server</p>
-            <div id="upload_section">
-                <a href="#" id="upload_resource_btn">Upload file</a> |
-                <a href="#" id="create_dir_btn">Create new folder</a>
-            </div>
         </div>
         
         
         <form id="search_form">
             <div id="searchbox" class="searchbox" bis_skin_checked="1">
-                <input id="search_area" type="search" placeholder="Search do not work!">
+                <input id="search_area" type="search" placeholder="Search does not work!">
                 <button aria-label="search" type="submit"></button>
             </div>
         </form>
     </div>
+    
+    <div id="menubar_container">
+        <ul role="menubar" id="nav_buttons">
+            <li role="menuitem" tabindex="0"><a href="javascript:history.go(-1)" title="Back" id="back_btn">Previous</a></li>
+            <li role="menuitem" tabindex="0"><a href="/" title="Home" id="home_btn">Home</a></li>
+            <li role="menuitem" tabindex="0"><a href="#" id="upload_resource_btn" title="Upload file">Upload file</a></li>
+            <li role="menuitem" tabindex="0"><a href="#" id="create_dir_btn" title="Create new folder">Create new folder</a></li>
+        </ul>
+    </div>
+
+    
 
     <div id="second_header">
         <main>
