@@ -15,8 +15,10 @@ export function formatUnixTimestamp(timestamp) {
 }
 
 // function for path normalization
-export function normalizePathName(path){
-    return path === "/" ? "/" : `${path}/`;
+export function normalizePathName(path) {
+    path = path.replace(/\/+/g, '/');
+
+    return path === "/" ? "/" : `${path.replace(/\/+$/, '')}/`;
 }
 
 /*
