@@ -1,7 +1,13 @@
-# cache folders
-*__pycache__/
-*pytest_cache/
+# Python cache
+__pycache__/
+*.py[cod]
 
-# docs folder
-docs/
-temp/
+# Pytest
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE
+.vscode/
