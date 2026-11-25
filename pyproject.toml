@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "expie"
+version = "0.1.0"
+description = "An experimental self-hosted file server."
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["file-server", "self-hosted", "fastapi", "lan"]
+
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "jinja2",
+    "PyYAML",
+    "python-multipart",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "httpx",
+    "build",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["lan_file_manager*"]
+
+[tool.setuptools.package-data]
+lan_file_manager = [
+    "frontend/templates/*.html",
+    "frontend/static/**/*",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "src"]
