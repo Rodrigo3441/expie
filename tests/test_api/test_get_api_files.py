@@ -1,25 +1,57 @@
+import main
+import pytest
 from fastapi.testclient import TestClient
-from main import app
-
-def test_default_endpoint():
-    with TestClient(app) as client:
-        response = client.get('/api/contents')
-        assert response.status_code == 200
 
 
-def test_non_existing_directory():
-    with TestClient(app) as client:
-        response = client.get('/api/contents?path=/errro')
-        assert response.status_code == 404
+@pytest.fixture
+def storage_path(tmp_path):
+    storage = tmp_path / "storage"
+    storage.mkdir()
+    return storage
 
 
-def test_non_allowed_directory():
-    with TestClient(app) as client:
-        response = client.get('/api/contents?path=/../../temp')
-        assert response.status_code == 403
+@pytest.fixture
+def client(storage_path, monkeypatch):
+    config = {
+        "default_path": str(storage_path),
+        "default_chunk_size": 1048576,
+        "connection": {
+            "host": "localhost",
+            "port": 3093
+        }
+    }
+
+    monkeypatch.setattr(main, "get_config", lambda: config)
+
+    with TestClient(main.app) as test_client:
+        yield test_client
 
 
-def test_not_a_directory():
-    with TestClient(app) as client:
-        response = client.get('/api/contents?path=/temp/1.jfif')
-        assert response.status_code == 400
+def test_default_endpoint(client):
+    response = client.get("/api/contents")
+
+    assert response.status_code == 200
+
+
+def test_non_existing_directory(client):
+    response = client.get("/api/contents?path=/non_existing")
+
+    assert response.status_code == 404
+
+
+def test_non_allowed_directory(client, storage_path, tmp_path):
+    outside_directory = tmp_path / "outside"
+    outside_directory.mkdir()
+
+    response = client.get("/api/contents?path=/../outside")
+
+    assert response.status_code == 403
+
+
+def test_not_a_directory(client, storage_path):
+    test_file = storage_path / "test.txt"
+    test_file.write_text("Test content")
+
+    response = client.get("/api/contents?path=/test.txt")
+
+    assert response.status_code == 400
