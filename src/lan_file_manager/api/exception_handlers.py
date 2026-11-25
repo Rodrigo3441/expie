@@ -12,7 +12,7 @@ async def handle_file_not_found(
             "data": None,
             "error": {
                 "code": "RESOURCE_NOT_FOUND",
-                "message": "The requested resource does not exist."
+                "message": str(exc)
             }
         }
     )
@@ -29,7 +29,7 @@ async def handle_not_a_directory(
             "data": None,
             "error": {
                 "code": "NOT_A_DIRECTORY",
-                "message": "The requested resource is not a directory."
+                "message": "The specified path is not a valid directory."
             }
         }
     )
@@ -46,7 +46,7 @@ async def handle_permission_error(
             "data": None,
             "error": {
                 "code": "FORBIDDEN",
-                "message": "The requested resource could not be accessed."
+                "message": str(exc)
             }
         }
     )
@@ -63,7 +63,7 @@ async def handle_is_a_directory(
             "data": None,
             "error": {
                 "code": "NOT_A_FILE",
-                "message": "It was expected a file."
+                "message": str(exc)
             }
         }
     )
@@ -80,7 +80,7 @@ async def handle_value_error(
             "data": None,
             "error": {
                 "code": "INVALID_VALUE",
-                "message": "The received value does not match the expected entry."
+                "message": str(exc)
             }
         }
     )
@@ -115,6 +115,22 @@ async def handle_file_exists_exception(
             "error": {
                 "code": "RESOURCE_ALREADY_EXISTS",
                 "message": str(exc)
+            }
+        }
+    )
+
+async def handle_os_error(
+        request: Request,
+        exc: OSError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=400,
+        content={
+            "success": False,
+            "data": None,
+            "error": {
+                "code": "FILESYSTEM_ERROR",
+                "message": "The requested filesystem operation could not be completed."
             }
         }
     )
