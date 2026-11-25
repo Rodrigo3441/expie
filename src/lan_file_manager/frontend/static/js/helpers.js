@@ -86,3 +86,10 @@ export function createMoveButton(file, path, onMove){
 export function fileSizeToStringFormatted(filesize){
     return `${(filesize / 1024 / 1024).toFixed(2)} MB`;
 }
+
+export function encodePath(path) {
+    return path
+        .split('/')
+        .map(segment => encodeURIComponent(segment))
+        .join('/');
+}
