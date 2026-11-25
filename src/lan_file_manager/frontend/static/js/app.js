@@ -18,6 +18,7 @@ import {
     encodePath
 } from './helpers.js';
 
+// dialog element
 const dialogArea = document.getElementById("action_dialog")
 const dialogTitle = document.getElementById("dialog_title");
 const dialogContent = document.getElementById("dialog_content");
@@ -41,13 +42,9 @@ let currentPath = null;
 
 let selectedFiles = [];
 
-const uploadProgressItems = new Map();
+let hasUnsavedChanges = false;
 
-function asdf(path) {
-    return path
-        .replace(/\/+/g, '/')
-        .replace(/\/+$/, '') || '/';
-}
+const uploadProgressItems = new Map();
 
 dialogCancelButton.addEventListener("click", closeDialog);
 dialogCloseButton.addEventListener("click", closeDialog);
@@ -93,6 +90,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const entries = await loadDirectory(currentPath);
     renderDirectory(entries, currentPath);
+});
+
+// warning that will show up when the user tries to restart the page while uploading files
+window.addEventListener('beforeunload', (event) => {
+    if (hasUnsavedChanges) {
+        event.preventDefault();
+        event.returnValue = '';
+    }
 });
 
 fileInput.addEventListener("change", handleFileSelection);
@@ -141,8 +146,10 @@ async function handleDialogSubmit(event) {
                     throw new Error("Please select at least one file.");
                 }
 
+                hasUnsavedChanges = true;
                 dialogCancelButton.disabled = true;
                 dialogSubmitButton.disabled = true;
+                dialogCloseButton.disabled = true;
 
                 const uploadMessage = document.createElement("p");
                 uploadMessage.textContent = "Please wait while your files are being uploaded. The page will refresh automatically once the upload is complete.";
@@ -153,6 +160,7 @@ async function handleDialogSubmit(event) {
                     updateProgress(percentage);
                 });
 
+                hasUnsavedChanges = false;
                 selectedFiles = [];
                 closeDialog();
                 window.location.reload();
@@ -160,6 +168,8 @@ async function handleDialogSubmit(event) {
                 dialogErrorContainer.textContent = error.message;
                 dialogErrorContainer.hidden = false;
                 dialogContent.hidden = false;
+            } finally {
+                hasUnsavedChanges = false;
             }
             break;
         case "move":
@@ -519,6 +529,7 @@ function openDialog() {
     dialogErrorContainer.hidden = true;
     dialogCancelButton.disabled = false;
     dialogSubmitButton.disabled = false;
+    dialogCloseButton.disabled = false;
     dialogArea.showModal();
 }
 
