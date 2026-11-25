@@ -34,7 +34,7 @@ def test_create_directory(tmp_path):
         app.dependency_overrides.clear()
 
 
-def test_create_existing_directory_succeeds(tmp_path):
+def test_create_existing_directory_fails(tmp_path):
     storage = tmp_path / 'storage'
     storage.mkdir()
     (storage / 'documents').mkdir()
@@ -49,7 +49,7 @@ def test_create_existing_directory_succeeds(tmp_path):
                 params={'name': 'documents', 'path': '/'}
             )
 
-        assert response.status_code == 200
+        assert response.status_code == 400
 
     finally:
         app.dependency_overrides.clear()
