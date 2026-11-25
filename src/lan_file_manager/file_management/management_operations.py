@@ -264,8 +264,11 @@ class FileManagement:
 
         if final_resolved_path.exists():
             raise FileExistsError('A resource with this name already exists.')
-        
-        filesystem_access.create_directory(final_resolved_path)
+
+        try:
+            filesystem_access.create_directory(final_resolved_path)
+        except OSError:
+            raise OSError('The directory could not be created.')
 
 
     def delete_resource(self, path: str, name: str) -> None:
@@ -300,7 +303,7 @@ class FileManagement:
             raise PermissionError('The requested folder is outside the allowed path.')
 
         if not final_resolved_path.exists():
-            raise FileNotFoundError('The requested folder could not be found.')
+            raise FileNotFoundError('The requested resource could not be found.')
 
         if final_resolved_path.is_dir():
             filesystem_access.delete_directory(final_resolved_path)
@@ -351,7 +354,10 @@ class FileManagement:
         if destination_path.exists():
             raise FileExistsError('A resource with this name already exists.')
 
-        filesystem_access.rename_resource(source_path, destination_path)
+        try:
+            filesystem_access.rename_resource(source_path, destination_path)
+        except OSError:
+            raise OSError('The resource could not be renamed')
 
 
     def move_resource(self, source_path: str, destination_path: str) -> None:
