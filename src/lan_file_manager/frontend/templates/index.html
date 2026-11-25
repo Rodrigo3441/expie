@@ -9,6 +9,7 @@
     <link rel="icon" href="/static/assets/images/error-page/expie-ico.png">
 </head>
 <body>
+    <!-- Main header of the page, contain informations such as the project name, and a future search bar -->
     <div id="main_header">
         <div>
             <p class="main_title">Expie File Server</p>
@@ -23,6 +24,7 @@
         </form>
     </div>
     
+    <!-- Nav bar area, contains the navigation buttons, upload and create a new folder button -->
     <div id="menubar_container">
         <ul role="menubar" id="nav_buttons">
             <li role="menuitem" tabindex="0"><a href="javascript:history.go(-1)" title="Back" id="back_btn">Previous</a></li>
@@ -33,21 +35,23 @@
     </div>
 
     
-
+    <!-- The area where folders will be presented to the user -->
     <div id="second_header">
         <main>
+            <!-- A dialog element that is resposible for the user to interacting with the system, 
+             such as renaming, deleting, uploading and creating folder -->
             <dialog id="action_dialog">
                 <div class="window active" id="action_dialog_window">
                     <div class="title-bar">
                         <div class="title-bar-text" id="dialog_title"></div>
                             <div class="title-bar-controls">
-                                <button aria-label="Close" id="close_button"></button>
+                                <button aria-label="Close" id="close_button" disabled></button>
                             </div>
                     </div>
                     <div class="window-body has-space">
                         <form id="dialog_form">
                             
-                            <div id="dialog_error" hidden></div>
+                            <div id="dialog_error"></div>
 
                             <div class="has-scrollbar" id="upload_file_list" ></div>
 
@@ -62,6 +66,7 @@
                 </div>
             </dialog>
 
+            <!-- The area where the directory table will be rendered -->
             <section id="directory_content">
                 <h2>Files and directories</h2>
                 <table class="has-shadow" id="file_table">
@@ -88,6 +93,7 @@
         </main>
     </div>
 
+    <!-- file inputs for drag and drop functionality -->
     <input type="file" id="file_input" multiple hidden>
     <input type="file" id="folder_input" webkitdirectory multiple hidden>
 
