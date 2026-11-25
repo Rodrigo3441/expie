@@ -1,7 +1,7 @@
+from tempfile import NamedTemporaryFile
 import pathlib
 import io
 import shutil
-from tempfile import NamedTemporaryFile
 
 
 # ======================================
@@ -84,11 +84,6 @@ def finalize_upload(
 def delete_temp_file(temp_path: pathlib.Path) -> None:
     temp_path.unlink()
 
-# ======================================
-# Download operations (Not used)
-# ======================================
-def open_file(path: pathlib.Path) -> io.BufferedReader:
-    return path.open(mode='rb')
 
 # ======================================
 # Delete operations
