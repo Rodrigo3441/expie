@@ -1,3 +1,7 @@
+import {
+    normalizePathName
+} from './helpers.js';
+
 // api call for renaming the file
 export async function renameFile(file, path = "/", newName) {
     const url = new URL("/api/rename", window.location.origin)
@@ -155,7 +159,7 @@ async function uploadFile(file, path, onProgress){
 }
 
 export async function uploadFiles(files, path, onFileProgress){
-    const normalizedPath = path === "/" ? "/" : `${path}/`
+    const normalizedPath = normalizePathName(path);
 
     const uploads = files.map((file) => {
         const relativePath = file.webkitRelativePath;
