@@ -1,5 +1,5 @@
-from src.lan_file_manager.file_management.management_operations import FileManagement
-from src.lan_file_manager.config.config import get_config
+from lan_file_manager.file_management.management_operations import FileManagement
+from lan_file_manager.config.config import get_config
 import pathlib
 import pytest
 

@@ -1,7 +1,7 @@
 import pytest
 import yaml
 
-from src.lan_file_manager.config.config import (
+from lan_file_manager.config.config import (
     DEFAULT_CONFIG,
     create_default_config,
     get_config,

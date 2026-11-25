@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
-from src.lan_file_manager.file_management.management_operations import FileManagement
-from src.lan_file_manager.api.dependencies import return_file_management
-from src.lan_file_manager.config.config import get_config
+from lan_file_manager.file_management.management_operations import FileManagement
+from lan_file_manager.api.dependencies import return_file_management
+from lan_file_manager.config.config import get_config
 from main import app
 
 CHUNK_SIZE = get_config()['default_chunk_size']

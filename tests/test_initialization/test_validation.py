@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
 
-from src.lan_file_manager.initialization.validation import (
+from lan_file_manager.initialization.validation import (
     validate_absolute_path,
     validate_no_symlinks,
     validate_path_exists,

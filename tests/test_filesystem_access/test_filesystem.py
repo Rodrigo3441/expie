@@ -1,6 +1,6 @@
 import pathlib
 import pytest
-from src.lan_file_manager.filesystem_access.directory_operations import list_directory
+from lan_file_manager.filesystem_access.directory_operations import list_directory
 
 def test_list_directory(tmp_path):
     # Create a temporary config file with an invalid default path

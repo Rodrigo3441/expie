@@ -1,4 +1,4 @@
-from src.lan_file_manager.filesystem_access.directory_operations import create_directory
+from lan_file_manager.filesystem_access.directory_operations import create_directory
 
 def test_dir_creation(tmp_path):
     base_folder = tmp_path

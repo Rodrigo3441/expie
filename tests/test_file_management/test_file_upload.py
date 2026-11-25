@@ -4,9 +4,9 @@ import pytest
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import as_completed
 from threading import Barrier
-from src.lan_file_manager.file_management.management_operations import FileManagement
-from src.lan_file_manager.filesystem_access import directory_operations as filesystem_access
-from src.lan_file_manager.config.config import get_config
+from lan_file_manager.file_management.management_operations import FileManagement
+from lan_file_manager.filesystem_access import directory_operations as filesystem_access
+from lan_file_manager.config.config import get_config
 
 CHUNK_SIZE = 1024 * 1024
 

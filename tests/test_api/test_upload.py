@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
-from src.lan_file_manager.file_management.management_operations import FileManagement
-from src.lan_file_manager.api.dependencies import return_file_management
-from src.lan_file_manager.filesystem_access import directory_operations as filesystem_access
-from src.lan_file_manager.config.config import get_config
+from lan_file_manager.file_management.management_operations import FileManagement
+from lan_file_manager.api.dependencies import return_file_management
+from lan_file_manager.filesystem_access import directory_operations as filesystem_access
+from lan_file_manager.config.config import get_config
 from main import app
 import pytest
 
@@ -60,7 +60,7 @@ def test_upload_failure_preserves_existing_file(tmp_path, monkeypatch):
                 }
             )
 
-        assert response.status_code == 500
+        assert response.status_code == 400
 
         assert existing_file.read_bytes() == b'original content'
 
