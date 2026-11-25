@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, BackgroundTasks
 from fastapi.responses import StreamingResponse
 from ...file_management.management_operations import FileManagement
 from ...api.dependencies import return_file_management
-from ...config.config import get_config
 import mimetypes
 import os
 
