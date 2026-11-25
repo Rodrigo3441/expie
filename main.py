@@ -3,10 +3,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse
 from contextlib import asynccontextmanager
-from src.lan_file_manager.api.routes import (files, directories, downloads, error_pages)
-from src.lan_file_manager.api.dependencies import return_file_management
-from src.lan_file_manager.initialization.validation import validate_storage_path
-from src.lan_file_manager.api.exception_handlers import (
+from lan_file_manager.api.routes import (files, directories, downloads, error_pages)
+from lan_file_manager.api.dependencies import return_file_management
+from lan_file_manager.initialization.validation import validate_storage_path
+from lan_file_manager.api.exception_handlers import (
     handle_file_not_found,
     handle_not_a_directory,
     handle_permission_error,
@@ -20,8 +20,8 @@ from src.lan_file_manager.api.exception_handlers import (
 import pathlib
 import sys
 
-from src.lan_file_manager.config.config import get_config
-from src.lan_file_manager.file_management.management_operations import FileManagement
+from lan_file_manager.config.config import get_config
+from lan_file_manager.file_management.management_operations import FileManagement
 
 # avoids tracebacks on console
 sys.tracebacklimit = 0
