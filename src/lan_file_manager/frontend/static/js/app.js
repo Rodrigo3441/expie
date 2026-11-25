@@ -14,7 +14,8 @@ import {
     createRenameButton,
     createDeleteButton,
     createMoveButton,
-    fileSizeToStringFormatted
+    fileSizeToStringFormatted,
+    encodePath
 } from './helpers.js';
 
 const dialogArea = document.getElementById("action_dialog")
@@ -143,7 +144,9 @@ async function handleDialogSubmit(event) {
                 dialogCancelButton.disabled = true;
                 dialogSubmitButton.disabled = true;
 
-                dialogContent.hidden = true;
+                const uploadMessage = document.createElement("p");
+                uploadMessage.textContent = "Please wait while your files are being uploaded. The page will refresh automatically once the upload is complete.";
+                dialogContent.replaceChildren(uploadMessage);
 
                 await uploadFiles(selectedFiles, currentPath, (file, percentage) => {
                     const updateProgress = uploadProgressItems.get(file);
@@ -166,9 +169,6 @@ async function handleDialogSubmit(event) {
 
                 const sourcePath = normalizedPath + currentFileName;
                 const destinationPath = newDirectoryDestination;
-
-                console.log(sourcePath);
-                console.log(destinationPath);
 
                 await moveFile(sourcePath, destinationPath)
                 window.location.reload();
@@ -267,6 +267,7 @@ function showRenameDialog(file, path) {
     inputRename.id = "new_name";
     inputRename.type = "text";
     inputRename.value = file.name;
+    inputRename.setAttribute("maxlength", "255");
 
     dialogContent.appendChild(inputRename);
 
@@ -314,6 +315,7 @@ async function showCreateDirDialog(path){
     const inputCreateDir = document.createElement("input");
     inputCreateDir.id = "new_directory";
     inputCreateDir.type = "text";
+    inputCreateDir.setAttribute("maxlength", "255");
 
     dialogContent.appendChild(inputCreateDir);
 
@@ -423,10 +425,14 @@ function createActionButtonsContainer(file, path) {
 
 // renders the directory content inside the web page
 function renderDirectory(entries, path) {
-    const normalizedPath = normalizePathName(path);
+    // path -> ///test#//tmp || /test#/tmp
+    // normalized path -> /test#/tmp
+    // encodedPath -> /test%23/tmp
+    const normalizedPath = normalizePathName(path); 
+    const encodedPath = encodePath(normalizedPath);
     
-    if (window.location.pathname !== normalizedPath) {
-        window.history.replaceState(null, '', normalizedPath);
+    if (window.location.pathname !== encodedPath) {
+        window.history.replaceState(null, '', encodedPath);
     }
     
     const fileList = document.getElementById("file_list");
@@ -458,7 +464,7 @@ function renderDirectory(entries, path) {
         // define the filename link
         let filename = document.createElement("a");
         filename.textContent = file.name;
-        filename.href = `${normalizedPath}${file.name}`;
+        filename.href = `${encodedPath}${encodeURIComponent(file.name)}`;
 
         if (file.type === "DIRECTORY") {
             container.classList.add("directory");
@@ -520,10 +526,4 @@ function closeDialog() {
     dialogContent.replaceChildren()
     dialogUploadList.hidden = true;
     dialogArea.close();
-}
-
-async function return_content(path = "/") {
-    const entries = await loadDirectory(path);
-    renderDirectory(entries, path);
-    
 }
