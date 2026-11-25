@@ -35,6 +35,7 @@ body {
     margin: 0;
 }
 
+/* files area header */
 #second_header {
     background-color: #e2e9f9;
     padding: 10px;
@@ -49,11 +50,6 @@ body {
     .main_title {
         font-size: 22px;
     }
-
-    /* .searchbox {
-        flex: 1;
-        min-width: 0;
-    } */
 
     .searchbox input {
         width: 100%;
@@ -77,7 +73,7 @@ body {
 #nav_buttons {
     line-height: 30px;
     color: #ffffff;
-    font-size: 14px;
+    font-size: 12px;
     border-top: 1px solid #ffffff;
     padding-left: 5px;
     background: linear-gradient(
@@ -103,6 +99,7 @@ body {
     background: transparent;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
     cursor: pointer;
+    padding: 0 10px 0 10px;
 }
 
 #nav_buttons li:hover {
@@ -127,6 +124,7 @@ body {
 #nav_buttons a {
     color: #ffffff;
     display: block;
+    line-height: 42px;
 }
 
 #button_icon {
@@ -168,6 +166,17 @@ body {
 
 #file_table tr {
     border-bottom: 1px solid #eeeeee;
+    align-items: center;
+}
+
+#file_table tr:hover {
+    background: linear-gradient(
+    to bottom,
+    #ebf5fb 0%,
+    #e1f5ff 49%,
+    #caecff 50%,
+    #b6e4ff 100%
+  );
 }
 
 .name_column,
@@ -225,7 +234,6 @@ body {
 ================================= */
 
 .action_buttons {
-    display: inline-flex;
     align-items: center;
     gap: 20px;
     height: auto;
@@ -310,12 +318,18 @@ body {
 
 #dialog_error {
     padding: 5px;
+    overflow-wrap: break-word;
 }
 
 #dialog_actions {
     display: flex;
     justify-content: flex-end;
     gap: 6px;
+}
+
+/* Dialog input */
+#action_dialog input {
+    width: 200px;
 }
 
 
