@@ -1,9 +1,8 @@
 from lan_file_manager.file_management.management_operations import FileManagement
-from lan_file_manager.config.config import get_config
 import pathlib
 import pytest
 
-CHUNK_SIZE = get_config()['default_chunk_size']
+CHUNK_SIZE = 1048576
 
 def create_operations(path: pathlib.Path) -> FileManagement:
     return FileManagement(path, CHUNK_SIZE)

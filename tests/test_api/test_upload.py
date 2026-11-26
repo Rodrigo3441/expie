@@ -2,11 +2,10 @@ from fastapi.testclient import TestClient
 from lan_file_manager.file_management.management_operations import FileManagement
 from lan_file_manager.api.dependencies import return_file_management
 from lan_file_manager.filesystem_access import directory_operations as filesystem_access
-from lan_file_manager.config.config import get_config
 from main import app
 import pytest
 
-CHUNK_SIZE = get_config()['default_chunk_size']
+CHUNK_SIZE = 1048576
 
 def test_upload_file(tmp_path):
     file_management = FileManagement(tmp_path, CHUNK_SIZE)

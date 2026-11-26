@@ -1,12 +1,11 @@
 from fastapi.testclient import TestClient
 from lan_file_manager.file_management.management_operations import FileManagement
 from lan_file_manager.api.dependencies import return_file_management
-from lan_file_manager.config.config import get_config
 from main import app
 import io
 import zipfile
 
-CHUNK_SIZE = get_config()['default_chunk_size']
+CHUNK_SIZE = 1048576
 
 def test_download_file(tmp_path):
     storage = tmp_path / 'storage'

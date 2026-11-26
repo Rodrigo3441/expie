@@ -3,9 +3,8 @@ from lan_file_manager.file_management.management_operations import FileManagemen
 from lan_file_manager.api.dependencies import return_file_management
 from main import app
 import pytest
-from src.lan_file_manager.config.config import get_config
 
-CHUNK_SIZE = get_config()['default_chunk_size']
+CHUNK_SIZE = 1048576
 
 def test_create_directory(tmp_path):
     storage = tmp_path / 'storage'
