@@ -1,6 +1,5 @@
 from tempfile import NamedTemporaryFile
 import pathlib
-import io
 import shutil
 
 
