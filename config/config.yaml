@@ -1,0 +1,7 @@
+default_path: ''
+default_chunk_size: 1048576
+
+# Connection settings (currently unused)
+connection:
+  host: localhost
+  port: 3093
