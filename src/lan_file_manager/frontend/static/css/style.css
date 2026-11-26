@@ -41,22 +41,6 @@ body {
     padding: 10px;
 }
 
-@media (max-width: 600px) {
-    #main_header {
-        gap: 8px;
-        padding: 8px;
-    }
-
-    .main_title {
-        font-size: 22px;
-    }
-
-    .searchbox input {
-        width: 100%;
-        min-width: 0;
-    }
-}
-
 #upload_section a {
     color: #ffffff;
     font-size: 16px;
