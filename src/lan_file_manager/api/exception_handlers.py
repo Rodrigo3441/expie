@@ -46,7 +46,7 @@ async def handle_permission_error(
             "data": None,
             "error": {
                 "code": "FORBIDDEN",
-                "message": str(exc)
+                "message": "Access denied. You don't have the required permissions to perform this operation."
             }
         }
     )
