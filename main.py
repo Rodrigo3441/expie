@@ -98,4 +98,11 @@ async def serve_frontend(
             context={},
             status_code=404
         )
+    except PermissionError:
+        return templates.TemplateResponse(
+            request=request,
+            name='403.html',
+            context={},
+            status_code=403
+        )
 
