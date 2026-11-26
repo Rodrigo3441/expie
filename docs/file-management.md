@@ -19,28 +19,8 @@ Responsible for coordinating file and directory operations, enforcing applicatio
 - Use streaming to avoid loading entire files into memory.
 - Store incomplete uploads in unique, hidden temporary files inside the destination directory.
 - Finalize uploads only after successful completion.
-- Preserve existing files until replacement uploads are complyreaete.
+- Preserve existing files until replacement uploads are complete.
 - Clean up incomplete uploads.
-
-## Conflict Handling
-
-When a destination filename already exists, allow the user to:
-
-- Overwrite the existing file.
-- Keep both files using an available filename.
-- Cancel or skip the operation.
-
-Batch operations may partially succeed.
-
-## Operation Results
-
-Initial result statuses:
-
-- `SUCCESS`
-- `PARTIAL_SUCCESS`
-- `FAILURE`
-
-Results should include relevant successful operations, failed entries and error information.
 
 ## Responsibilities outside this component
 

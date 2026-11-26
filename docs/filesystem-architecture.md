@@ -26,8 +26,6 @@ For each filesystem entry, provide:
 | Extension | File extension, when applicable |
 | Size | File size |
 | Modified date | Last modification date |
-| Hidden | Whether the entry is hidden |
-| Internal path | Filesystem path used internally by the application |
 
 ## Responsibilities outside this component
 
