@@ -88,8 +88,13 @@ document.addEventListener("drop", (event) => {
 document.addEventListener("DOMContentLoaded", async () => {
     const currentPath = decodeURIComponent(window.location.pathname);
 
-    const entries = await loadDirectory(currentPath);
-    renderDirectory(entries, currentPath);
+    try {
+        const entries = await loadDirectory(currentPath);
+        renderDirectory(entries, currentPath);
+    } catch (error) {
+        window.location.replace("/403");
+    }
+    
 });
 
 // warning that will show up when the user tries to restart the page while uploading files
@@ -168,6 +173,8 @@ async function handleDialogSubmit(event) {
                 dialogErrorContainer.textContent = error.message;
                 dialogErrorContainer.hidden = false;
                 dialogContent.hidden = false;
+                dialogCancelButton.disabled = false;
+                dialogCloseButton.disabled = false;
             } finally {
                 hasUnsavedChanges = false;
             }
