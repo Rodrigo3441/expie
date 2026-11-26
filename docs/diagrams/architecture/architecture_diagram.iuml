@@ -1,0 +1,37 @@
+@startuml ExpieArchitecture
+allow_mixing
+title Expie - Component Architecture
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Frontend" {
+    component "Web Interface\nHTML / CSS / JavaScript" as Frontend
+}
+
+package "Backend" {
+    component "API Layer\nFastAPI / Routes / Exception Handlers" as API
+
+    component "File Management\nPath Validation / Application Rules\nFile Operation Coordination" as FM
+
+    component "Filesystem Access\nLow-level Filesystem Operations" as FS
+}
+
+package "Application Startup" {
+    component "Configuration Loader" as Config
+    component "Initialization\nStorage Path Validation" as Init
+    component "Application Entry Point\nmain.py / Lifespan" as Main
+}
+
+database "Operating System\nLocal Filesystem" as OS
+
+Frontend <--> API : HTTP Requests / Responses
+API <--> FM : Function Calls
+FM <--> FS : Function Calls
+FS <--> OS : Filesystem Operations
+
+Main --> Config : Loads settings
+Main --> Init : Validates storage
+Main --> FM : Initializes component
+
+@enduml
