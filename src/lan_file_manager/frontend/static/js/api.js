@@ -177,7 +177,19 @@ export async function uploadFiles(files, path, onFileProgress){
         );
     })
 
-    return await Promise.allSettled(uploads);
+    const results = await Promise.allSettled(uploads);
+
+    const failedUploads = results.filter(
+        result => result.status === "rejected"
+    );
+
+    if (failedUploads.length > 0) {
+        throw new Error(
+            `${failedUploads.length} of ${files.length} files failed to upload. Check your connection and available storage space.`
+        );
+    }
+
+    return results
 }
 
 // API call for moving a file or directory
