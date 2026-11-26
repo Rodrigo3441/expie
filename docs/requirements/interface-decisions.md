@@ -7,7 +7,8 @@ The interface uses the [7.css](https://khang-nd.github.io/7.css/) framework as i
 ## Main Header
 
 The main header is inspired by the header design of [Microsoft Update Catalog](https://www.catalog.update.microsoft.com/Home.aspx), a website that distributes update packages.
-![alt text](../images/header-comparison.png)
+![alt text](../images/header-comparison.png)<br>
+
 I am not sure why i did get the idea of using this aesthetic.
 
 ## Icons
