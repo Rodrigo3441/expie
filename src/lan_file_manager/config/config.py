@@ -1,8 +1,6 @@
 import yaml
 import pathlib
 
-DEFAULT_CONFIG_PATH = pathlib.Path(__file__).parents[3] / 'config/config.yaml'
-
 DEFAULT_CONFIG_KEYS = {
     'default_path', 
     'default_chunk_size', 
@@ -69,7 +67,7 @@ def validate_config(config: dict) -> None:
         raise ValueError("'connection.port' must be an integer between 1 and 65535")
     
 
-def get_config(default_config_path=DEFAULT_CONFIG_PATH) -> dict:
+def get_config(default_config_path) -> dict:
     config_path = pathlib.Path(default_config_path)
 
     if not config_path.exists():

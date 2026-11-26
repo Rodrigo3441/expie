@@ -28,7 +28,7 @@ sys.tracebacklimit = 0
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    config = get_config()
+    config = get_config(CONFIG_PATH)
 
     default_path = pathlib.Path(config['default_path'])
     default_chunk_size = config['default_chunk_size']
@@ -40,8 +40,9 @@ async def lifespan(app: FastAPI):
     yield
 
 # including the html page resources
-BASE_DIR = pathlib.Path(__file__).resolve().parent
-FRONTEND_DIR = BASE_DIR / 'src' / 'lan_file_manager' / 'frontend'
+PROJECT_ROOT = pathlib.Path(__file__).resolve().parent
+CONFIG_PATH = PROJECT_ROOT / 'config' / 'config.yaml'
+FRONTEND_DIR = PROJECT_ROOT / 'src' / 'lan_file_manager' / 'frontend'
 
 app = FastAPI(lifespan=lifespan, openapi_url=None)
 
