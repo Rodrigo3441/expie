@@ -21,7 +21,7 @@ def client(storage_path, monkeypatch):
         }
     }
 
-    monkeypatch.setattr(main, "get_config", lambda: config)
+    monkeypatch.setattr(main, "get_config", lambda config_path: config)
 
     with TestClient(main.app) as test_client:
         yield test_client
@@ -39,7 +39,7 @@ def test_non_existing_directory(client):
     assert response.status_code == 404
 
 
-def test_non_allowed_directory(client, storage_path, tmp_path):
+def test_non_allowed_directory(client, tmp_path):
     outside_directory = tmp_path / "outside"
     outside_directory.mkdir()
 
