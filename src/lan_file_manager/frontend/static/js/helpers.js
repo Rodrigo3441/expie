@@ -7,11 +7,13 @@ export function formatUnixTimestamp(timestamp) {
     const day = pad(date.getDate());
     const year = date.getFullYear();
     
-    const hours = pad(date.getHours());
+    const hours = date.getHours();
+    const formattedHours = hours % 12 || 12;
     const minutes = pad(date.getMinutes());
     const seconds = pad(date.getSeconds());
+    const period = hours >= 12 ? "PM" : "AM";
 
-    return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
+    return `${month}/${day}/${year} ${formattedHours}:${minutes}:${seconds} ${period}`;
 }
 
 // function for path normalization
@@ -83,8 +85,17 @@ export function createMoveButton(file, path, onMove){
     return moveButton;
 }
 
-export function fileSizeToStringFormatted(filesize){
-    return `${(filesize / 1024 / 1024).toFixed(2)} MB`;
+export function fileSizeToStringFormatted(filesize) {
+    const units = ["B", "KB", "MB", "GB"];
+    let size = filesize;
+    let unitIndex = 0;
+
+    while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024;
+        unitIndex++;
+    }
+
+    return `${size.toFixed(2)} ${units[unitIndex]}`;
 }
 
 export function encodePath(path) {
