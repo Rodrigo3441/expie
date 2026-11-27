@@ -6,7 +6,6 @@ from concurrent.futures import as_completed
 from threading import Barrier
 from lan_file_manager.file_management.management_operations import FileManagement
 from lan_file_manager.filesystem_access import directory_operations as filesystem_access
-from lan_file_manager.config.config import get_config
 
 CHUNK_SIZE = 1024 * 1024
 
@@ -15,7 +14,7 @@ def test_upload_replaces_existing_file(tmp_path):
     existing_file = tmp_path / "example.txt"
     existing_file.write_text("old content")
 
-    file_management = FileManagement(tmp_path, get_config()['default_chunk_size'])
+    file_management = FileManagement(tmp_path, CHUNK_SIZE)
 
     uploaded_content = b"new content"
     file_stream = io.BytesIO(uploaded_content)
@@ -38,7 +37,7 @@ def test_interrupted_upload_cleans_temp_file(tmp_path, monkeypatch):
     existing_file = tmp_path / "example.txt"
     existing_file.write_text("old content")
 
-    file_management = FileManagement(tmp_path, get_config()['default_chunk_size'])
+    file_management = FileManagement(tmp_path, CHUNK_SIZE)
 
     uploaded_content = b"x" * (CHUNK_SIZE + 1)
     file_stream = io.BytesIO(uploaded_content)
@@ -85,7 +84,7 @@ def test_interrupted_upload_cleans_temp_file(tmp_path, monkeypatch):
 
 
 def test_concurrent_uploads_different_files(tmp_path):
-    file_management = FileManagement(tmp_path, get_config()['default_chunk_size'])
+    file_management = FileManagement(tmp_path, CHUNK_SIZE)
 
     barrier = Barrier(2)
 
@@ -123,7 +122,7 @@ def test_concurrent_uploads_different_files(tmp_path):
 
 
 def test_concurrent_uploads_same_filename(tmp_path):
-    file_management = FileManagement(tmp_path, get_config()['default_chunk_size'])
+    file_management = FileManagement(tmp_path, CHUNK_SIZE)
 
     barrier = Barrier(2)
 
