@@ -16,28 +16,19 @@ def test_list_directory_empty_folder(tmp_path):
     assert files == []
 
 def test_list_directory_containing_subdirectories(tmp_path):
-    testfile1 = tmp_path / 'config.yaml'
-    testfile1.write_text('')
+    (tmp_path / "config.yaml").write_text("")
+    (tmp_path / "temp1").mkdir()
+    (tmp_path / "temp2").mkdir()
 
     files = list_directory(tmp_path)
-    assert files[0]['name'] == 'config.yaml'
 
-    subdir1 = tmp_path / 'temp1'
-    subdir1.mkdir()
-    files = list_directory(tmp_path)
-    assert files[1]['name'] == 'temp1'
-
-
-    subdir2 = tmp_path / 'temp2'
-    subdir2.mkdir()
-    files = list_directory(tmp_path)
-    assert files[2]['name'] == 'temp2'
-
-    
     assert len(files) == 3
-    assert files[0]['type'] == 'FILE'
-    assert files[1]['type'] == 'DIRECTORY'
-    assert files[2]['type'] == 'DIRECTORY'
+
+    entries = {entry["name"]: entry for entry in files}
+
+    assert entries["config.yaml"]["type"] == "FILE"
+    assert entries["temp1"]["type"] == "DIRECTORY"
+    assert entries["temp2"]["type"] == "DIRECTORY"
 
 
 def test_list_directory_non_existing_directory():
