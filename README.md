@@ -158,6 +158,7 @@ After=network.target
 
 [Service]
 Type=simple
+Environment="TMPDIR=/var/tmp"
 User=YOUR_USERNAME
 WorkingDirectory=/path/to/expie
 ExecStart=/path/to/expie/.venv/bin/uvicorn main:app --host 0.0.0.0 --port 3093
@@ -173,6 +174,9 @@ Replace the following values:
 - `YOUR_USERNAME`: The Linux user that should run Expie.
 - `/path/to/expie`: The absolute path to your cloned Expie repository.
 - `ExecStart`: Make sure the Uvicorn executable points to the virtual environment inside your Expie directory.
+- `TMPDIR`: Defines where temporary files from incoming uploads are stored. It defaults to `/var/tmp`, which is generally disk-backed and suitable for large uploads. You can change it to another writable directory with sufficient available space.
+
+If you **choose** a different temporary directory, make sure it exists and is accessible by the Linux user running Expie.
 
 Save and close the file.
 
