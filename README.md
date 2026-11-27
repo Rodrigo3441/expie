@@ -1,5 +1,10 @@
 # <img src="src/lan_file_manager/frontend/static/assets/images/error-page/expie-ico.png" width="28" height="28" alt="icon" /> Expie - a self-hosted file server for your LAN
 
+![Self-hosted](https://img.shields.io/badge/self--hosted-yes-blue)
+![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-backend-009688?logo=fastapi&logoColor=white)
+[![License](https://img.shields.io/github/license/rodrigo3441/expie)](LICENSE)
+
 Expie started as a small experiment that gradually evolved into a full-fledged personal project. Its name was inspired by *Casualties Unknown*, a game I was particularly enthusiastic about when development began. What started as a simple idea eventually grew into a project focused on learning, building, and exploring software engineering.
 
 ![alt text](docs/images/screenshot01.png)
