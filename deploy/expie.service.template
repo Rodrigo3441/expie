@@ -4,6 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
+Environment="TMPDIR=/var/tmp"
 User=YOUR_USERNAME
 WorkingDirectory=/path/to/expie
 ExecStart=/path/to/expie/.venv/bin/uvicorn main:app --host 0.0.0.0 --port 3093
